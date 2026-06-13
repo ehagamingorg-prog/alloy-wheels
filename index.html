@@ -713,10 +713,29 @@
     }
 
     /* ── MOBILE ── */
-    .mobile-nav-btn { display: none; background: none; border: none; color: var(--text); font-size: 22px; cursor: pointer; }
+    .mobile-nav-btn { display: none; background: none; border: none; color: var(--text); font-size: 22px; cursor: pointer; line-height: 1; }
 
     @media (max-width: 768px) {
-      nav { display: none; }
+      nav {
+        display: none;
+        position: absolute;
+        top: 64px;
+        left: 0;
+        right: 0;
+        background: rgba(26,26,26,.98);
+        border-bottom: 1px solid var(--border);
+        flex-direction: column;
+        gap: 0;
+        padding: 8px 0;
+        z-index: 99;
+      }
+      nav.open { display: flex; }
+      nav a {
+        padding: 14px 24px;
+        font-size: 16px;
+        border-bottom: 1px solid var(--border);
+      }
+      nav a:last-child { border-bottom: none; }
       .mobile-nav-btn { display: block; }
 
       .hero-content { grid-template-columns: 1fr; }
@@ -772,15 +791,15 @@
         <div class="logo-sub">Тбилисская, Краснодарский край</div>
       </div>
     </a>
-    <nav>
-      <a href="#services">Услуги</a>
-      <a href="#prices">Цены</a>
-      <a href="#gallery">Работы</a>
-      <a href="#reviews">Отзывы</a>
-      <a href="#contact">Контакты</a>
+    <nav id="mainNav">
+      <a href="#services" onclick="closeMenu()">Услуги</a>
+      <a href="#prices" onclick="closeMenu()">Цены</a>
+      <a href="#gallery" onclick="closeMenu()">Работы</a>
+      <a href="#reviews" onclick="closeMenu()">Отзывы</a>
+      <a href="#contact" onclick="closeMenu()">Контакты</a>
     </nav>
     <a href="tel:+79991234567" class="header-cta">Позвонить</a>
-    <button class="mobile-nav-btn">☰</button>
+    <button class="mobile-nav-btn" id="menuBtn" aria-label="Меню" onclick="toggleMenu()">☰</button>
   </div>
 </header>
 
@@ -1203,7 +1222,12 @@
           <div class="contact-item-icon">💬</div>
           <div>
             <div class="contact-item-label">WhatsApp / Telegram</div>
-            <div class="contact-item-val">+7 (999) 123-45-67</div>
+            <div class="contact-item-val" style="display:flex;gap:12px;flex-wrap:wrap;">
+              <a href="https://wa.me/79991234567" target="_blank" rel="noopener"
+                 style="color:var(--primary);text-decoration:none;font-weight:600;">WhatsApp</a>
+              <a href="https://t.me/+79991234567" target="_blank" rel="noopener"
+                 style="color:var(--primary);text-decoration:none;font-weight:600;">Telegram</a>
+            </div>
           </div>
         </div>
 
@@ -1314,7 +1338,30 @@
     setTimeout(() => toast.classList.remove('show'), 3500);
   }
 
-  // Smooth active nav highlight
+  function toggleMenu() {
+    const nav = document.getElementById('mainNav');
+    const btn = document.getElementById('menuBtn');
+    const open = nav.classList.toggle('open');
+    btn.textContent = open ? '✕' : '☰';
+  }
+
+  function closeMenu() {
+    const nav = document.getElementById('mainNav');
+    const btn = document.getElementById('menuBtn');
+    nav.classList.remove('open');
+    btn.textContent = '☰';
+  }
+
+  // Закрывать меню при клике вне него
+  document.addEventListener('click', (e) => {
+    const nav = document.getElementById('mainNav');
+    const btn = document.getElementById('menuBtn');
+    if (nav.classList.contains('open') && !nav.contains(e.target) && e.target !== btn) {
+      closeMenu();
+    }
+  });
+
+  // Активная ссылка в nav при скролле
   const sections = document.querySelectorAll('section[id]');
   const navLinks = document.querySelectorAll('nav a');
 
